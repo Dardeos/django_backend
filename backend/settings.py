@@ -25,7 +25,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-%bde&5725)@85!tu#_225
 
 # This stays True locally, but Render will set it to False automatically
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = ['https://django-api-zv1u.onrender.com']
+ALLOWED_HOSTS = ['django-api-zv1u.onrender.com']
 
 
 # Application definition
