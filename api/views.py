@@ -60,6 +60,9 @@ class RegistrationViewSet(viewsets.ModelViewSet):
             from rest_framework.exceptions import PermissionDenied
             raise PermissionDenied("Vous n'avez pas les droits pour effectuer cette action.")
 
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (permissions.AllowAny,)
@@ -69,9 +72,17 @@ class RegisterView(generics.CreateAPIView):
         email = request.data.get('email')
         password = request.data.get('password')
         
+        if not username or not password:
+            return Response({"error": "Données manquantes"}, status=status.HTTP_400_BAD_REQUEST)
+
         if User.objects.filter(username=username).exists():
             return Response({"error": "Ce nom d'utilisateur est déjà pris."}, status=status.HTTP_400_BAD_REQUEST)
-            
+
+        try:
+            validate_password(password, user=User(username=username))
+        except ValidationError as e:
+            return Response({"error": e.messages}, status=status.HTTP_400_BAD_REQUEST)
+
         user = User.objects.create_user(username=username, email=email, password=password)
         return Response({"message": "Utilisateur créé avec succès"}, status=status.HTTP_201_CREATED)
     
