@@ -48,6 +48,10 @@ class ParticipantViewSet(viewsets.ModelViewSet):
         if self.action not in ['list', 'retrieve'] and not is_admin(request.user):
             from rest_framework.exceptions import PermissionDenied
             raise PermissionDenied("Vous n'avez pas les droits pour effectuer cette action.")
+    def perform_destroy(self, instance):
+        email_to_delete = instance.email
+        instance.delete()
+        User.objects.filter(email=email_to_delete).delete()
 
 class RegistrationViewSet(viewsets.ModelViewSet):
     queryset = Registration.objects.all()
