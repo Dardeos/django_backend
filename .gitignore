@@ -6,3 +6,5 @@ venv/
 env/
 bin/
 lib/
+rapport.odt
+.~lock.rapport.odt\#
