@@ -59,7 +59,10 @@ class RegistrationViewSet(viewsets.ModelViewSet):
 
     def check_permissions(self, request):
         super().check_permissions(request)
-        if self.action not in ['list', 'retrieve', 'create'] and not is_admin(request.user):
+        super().check_permissions(request)
+        
+        allowed_actions = ['list', 'retrieve', 'create', 'destroy']
+        if self.action not in allowed_actions and not is_admin(request.user):
             from rest_framework.exceptions import PermissionDenied
             raise PermissionDenied("Vous n'avez pas les droits pour effectuer cette action.")
     
