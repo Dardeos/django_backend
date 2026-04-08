@@ -5,7 +5,10 @@ from .serializers import EventSerializer, ParticipantSerializer, RegistrationSer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.exceptions import PermissionDenied
-
+from rest_framework import generics, permissions
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth.models import User
 def is_admin(user):
     return user.is_staff
 
@@ -57,5 +60,20 @@ class RegistrationViewSet(viewsets.ModelViewSet):
             from rest_framework.exceptions import PermissionDenied
             raise PermissionDenied("Vous n'avez pas les droits pour effectuer cette action.")
 
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (permissions.AllowAny,)
+    
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        email = request.data.get('email')
+        password = request.data.get('password')
+        
+        if User.objects.filter(username=username).exists():
+            return Response({"error": "Ce nom d'utilisateur est déjà pris."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        user = User.objects.create_user(username=username, email=email, password=password)
+        return Response({"message": "Utilisateur créé avec succès"}, status=status.HTTP_201_CREATED)
+    
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
