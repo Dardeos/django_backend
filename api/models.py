@@ -41,7 +41,6 @@ class Registration(models.Model):
 @receiver(post_save, sender=User)
 def create_participant_for_new_user(sender, instance, created, **kwargs):
     if created:
-        # We use the username as the 'name' and the user's email
         Participant.objects.create(
             name=instance.username,
             email=instance.email
